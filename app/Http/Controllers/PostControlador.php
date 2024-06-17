@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use App\Models\Post;
 
 class PostControlador extends Controller
 {
@@ -11,7 +13,7 @@ class PostControlador extends Controller
      */
     public function index()
     {
-        //
+        return Post::all();
     }
 
     /**
@@ -27,7 +29,19 @@ class PostControlador extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $post = new Post();
+
+        $path = $request->file('arquivo')->store('imagens', 'public');
+
+        $post->nome      = $request->nome;
+        $post->email     = $request->email;
+        $post->titulo    = $request->titulo;
+        $post->subtitulo = $request->subtitulo;
+        $post->mensagem  = $request->mensagem;
+        $post->path      = $path;
+        $post->likes     = 0;
+
+        $post->save();
     }
 
     /**
@@ -59,11 +73,25 @@ class PostControlador extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $post = Post::find($id);
+        if (isset($post)){
+            storage::disk('public')->delete($post->arquivo);
+
+
+            $post->delete();
+            return 204;
+        }
+        return response('Post nao encontrado', 404);
     }
 
     public function like($id)
     {
-        //
+        $post = Post::find($id);
+        if (isset($post)){
+           $post->likes++;
+           $post->save();
+           return $post->id;
+        }
+        return response('ID não encontrado',404);
     }
 }
