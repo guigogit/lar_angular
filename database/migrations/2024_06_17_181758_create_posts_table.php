@@ -16,10 +16,10 @@ return new class extends Migration
             $table->string('nome');
             $table->string('email');
             $table->string('titulo');
-            $table->string('subtitulo');
-            $table->string('mensagem');
-            $table->string('arquivo');
-            $table->string('likes');
+            $table->string('subtitulo')->nullable(); // Permite nulo
+            $table->text('mensagem'); // Alterado para texto longo
+            $table->string('arquivo')->nullable(); // Permite nulo
+            $table->integer('likes')->default(0); // Alterado para inteiro
             $table->timestamps();
         });
     }
